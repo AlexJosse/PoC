@@ -4,19 +4,39 @@ networks:
   infra:
 
 services:
-  elasticsearch:
+  elasticsearch1:
     image: docker.elastic.co/elasticsearch/elasticsearch:8.3.0
-    container_name: elasticsearch
+    container_name: elasticsearch1
     environment:
       - node.name=es01
       - cluster.name=docker-cluster
-      - discovery.type=single-node
+      - discovery.seed_hosts=elasticsearch1,elasticsearch2
+      - cluster.initial_master_nodes=elasticsearch1,elasticsearch2
+      - network.host=0.0.0.0
       - xpack.security.enabled=false
     ports:
       - "9200:9200"
       - "9300:9300"
     volumes:
       - esdata1:/usr/share/elasticsearch/data
+    networks:
+      - infra
+
+  elasticsearch2:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.3.0
+    container_name: elasticsearch2
+    environment:
+      - node.name=es02
+      - cluster.name=docker-cluster
+      - discovery.seed_hosts=elasticsearch1,elasticsearch2
+      - cluster.initial_master_nodes=elasticsearch1,elasticsearch2
+      - network.host=0.0.0.0
+      - xpack.security.enabled=false
+    ports:
+      - "9201:9200"
+      - "9301:9300"
+    volumes:
+      - esdata2:/usr/share/elasticsearch/data
     networks:
       - infra
 
@@ -39,11 +59,12 @@ services:
     image: docker.elastic.co/kibana/kibana:8.3.0
     container_name: kibana
     environment:
-      - ELASTICSEARCH_URL=http://elasticsearch:9200
+      - ELASTICSEARCH_HOSTS=http://elasticsearch1:9200,http://elasticsearch2:9200
     ports:
       - "5601:5601"
     networks:
       - infra
+
   sftp:
     image: atmoz/sftp:latest
     container_name: sftp
@@ -57,7 +78,6 @@ services:
       - infra
     command: ["sh", "-c", "chown -R sftpuser:root /home/sftpuser/upload && chmod -R 755 /home/sftpuser/upload && /entrypoint"]
 
-  
   med_fusion:
     build: .
     container_name: med_fusion
@@ -72,7 +92,7 @@ services:
       - SFTP_USERNAME=sftpuser
       - SFTP_PASSWORD=password
       - ES_PORT=9200
-      - ES_HOST=elasticsearch
+      - ES_HOST=elasticsearch1
     ports:
       - "5000:5000"
     networks:
@@ -80,5 +100,6 @@ services:
 
 volumes:
   esdata1:
+  esdata2:
   mysqldata:
   sftpdata:

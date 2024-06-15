@@ -4,7 +4,9 @@ from mysql.connector import Error
 import pysftp
 from faker import Faker
 import pandas as pd
-from elasticsearch import Elasticsearch
+import fitz
+import re
+from elasticsearch import Elasticsearch, TransportError
 import os
 import sys
 import logging
@@ -17,7 +19,7 @@ MYSQL_PORT = int(os.getenv('MYSQL_PORT', 3356))
 MYSQL_USER = os.getenv('MYSQL_USER', 'root')
 MYSQL_PASSWORD = os.getenv('MYSQL_PASSWORD', 'root')
 MYSQL_DB = os.getenv('MYSQL_DB', 'hospital')
-ES_HOST = os.getenv('ES_HOST', 'localhost')
+ES_HOST = os.getenv('ES_HOST', 'elasticsearch1')
 ES_PORT = int(os.getenv('ES_PORT', 9200))
 ES_INDEX = os.getenv('ES_INDEX', 'medical_data')
 
@@ -156,6 +158,74 @@ def process_csv():
         logging.error(f"Error processing CSV: {str(e)}")
         return jsonify({"error": str(e)}), 500
 
+def extract_text_from_pdf(file_path):
+    document = fitz.open(file_path)
+    text = ""
+    for page_num in range(document.page_count):
+        page = document.load_page(page_num)
+        text += page.get_text()
+    return text
+
+def parse_pdf_text(text):
+    # Define regex patterns for the fields
+    patterns = {
+        "Indication": r"Indication\s*([\s\S]*?)(?=Technique|Description|Epreuve de stress|Rehaussement tardif|Conclusion)",
+        "Technique": r"Technique\s*([\s\S]*?)(?=Indication|Description|Epreuve de stress|Rehaussement tardif|Conclusion)",
+        "Description": r"Description\s*([\s\S]*?)(?=Indication|Technique|Epreuve de stress|Rehaussement tardif|Conclusion)",
+        "Epreuve de stress": r"Epreuve de stress\s*([\s\S]*?)(?=Indication|Technique|Description|Rehaussement tardif|Conclusion)",
+        "Rehaussement tardif": r"Rehaussement tardif\s*([\s\S]*?)(?=Indication|Technique|Description|Epreuve de stress|Conclusion)",
+        "Conclusion": r"Conclusion\s*([\s\S]*?)(?=Indication|Technique|Description|Epreuve de stress|Rehaussement tardif)"
+    }
+
+    data = {}
+    for field, pattern in patterns.items():
+        match = re.search(pattern, text, re.MULTILINE | re.DOTALL)
+        if match:
+            data[field] = match.group(1).strip()
+    
+    return data
+def insert_data_into_elasticsearch(data, index_name='medical_data'):
+    try:
+        res = es.index(index=index_name, body=data)
+        logging.debug(f"Inserted document ID: {res['_id']}")
+    except TransportError as e:
+        if e.status_code == 429 and 'index has read-only-allow-delete block' in str(e.error):
+            # Check disk usage
+            nodes = es.cat.nodes(format='json', h='name,disk.avail,disk.used,disk.total,disk.percent')
+            logging.info(f"Disk usage: {nodes}")
+            
+            # Check if there is enough space and remove the read-only block
+            disk_full = any(node['disk.percent'] > 95 for node in nodes)
+            if not disk_full:
+                es.indices.put_settings(index=index_name, body={"index.blocks.read_only_allow_delete": None})
+                res = es.index(index=index_name, body=data)
+                logging.debug(f"Inserted document ID after removing block: {res['_id']}")
+            else:
+                logging.error("Disk usage is still high. Cannot remove read-only block.")
+        else:
+            raise e
+
+@app.route('/process_pdf', methods=['GET'])
+def process_pdf():
+    try:
+        with pysftp.Connection(SFTP_HOST, username=SFTP_USERNAME, password=SFTP_PASSWORD, port=SFTP_PORT, cnopts=cnopts) as sftp:
+            sftp.cwd('upload')
+            pdf_files = [f for f in sftp.listdir() if f.endswith('.pdf')]
+            logging.debug(f"File {pdf_files}")
+            if not pdf_files:
+                return jsonify({"error": "No PDF files found"}), 400
+            sftp.get(pdf_files[0], os.path.join(app.config['UPLOAD_FOLDER'], pdf_files[0]))
+            pdf_file = os.path.join(app.config['UPLOAD_FOLDER'], pdf_files[0])
+            logging.debug(f"2) File {pdf_file}")
+            text = extract_text_from_pdf(pdf_file)
+            parsed_data = parse_pdf_text(text)
+            insert_data_into_elasticsearch(parsed_data)
+            return jsonify({"message": "Data processed and inserted successfully"}), 200
+    
+    except Exception as e:
+        logging.error(f"Error processing CSV: {str(e)}")
+        return jsonify({"error": str(e)}), 500
+    
 # Search patients in Elasticsearch
 @app.route('/search_patients', methods=['GET'])
 def search_patients():
