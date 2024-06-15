@@ -184,27 +184,21 @@ def parse_pdf_text(text):
             data[field] = match.group(1).strip()
     
     return data
+
 def insert_data_into_elasticsearch(data, index_name='medical_data'):
     try:
         res = es.index(index=index_name, body=data)
         logging.debug(f"Inserted document ID: {res['_id']}")
     except TransportError as e:
         if e.status_code == 429 and 'index has read-only-allow-delete block' in str(e.error):
-            # Check disk usage
-            nodes = es.cat.nodes(format='json', h='name,disk.avail,disk.used,disk.total,disk.percent')
-            logging.info(f"Disk usage: {nodes}")
-            
-            # Check if there is enough space and remove the read-only block
-            disk_full = any(node['disk.percent'] > 95 for node in nodes)
-            if not disk_full:
-                es.indices.put_settings(index=index_name, body={"index.blocks.read_only_allow_delete": None})
-                res = es.index(index=index_name, body=data)
-                logging.debug(f"Inserted document ID after removing block: {res['_id']}")
-            else:
-                logging.error("Disk usage is still high. Cannot remove read-only block.")
+            # Remove the read-only block
+            es.indices.put_settings(index=index_name, body={"index.blocks.read_only_allow_delete": None})
+            # Retry inserting the document
+            res = es.index(index=index_name, body=data)
+            logging.debug(f"Inserted document ID after removing block: {res['_id']}")
         else:
             raise e
-
+        
 @app.route('/process_pdf', methods=['GET'])
 def process_pdf():
     try:
@@ -219,6 +213,7 @@ def process_pdf():
             logging.debug(f"2) File {pdf_file}")
             text = extract_text_from_pdf(pdf_file)
             parsed_data = parse_pdf_text(text)
+            logging.debug(f"3) parsed_data {parsed_data}")
             insert_data_into_elasticsearch(parsed_data)
             return jsonify({"message": "Data processed and inserted successfully"}), 200
     
@@ -251,7 +246,13 @@ def search_patients():
                     "query": query,
                     "fields": [
                         "Pathology",
-                        "PID"
+                        "PID",
+                        "Indication",
+                        "Technique",
+                        "Description",
+                        "Epreuve de stress",
+                        "Rehaussement tardif",
+                        "Conclusion"
                     ],
                     "type": "best_fields",
                     "fuzziness": "AUTO" 
