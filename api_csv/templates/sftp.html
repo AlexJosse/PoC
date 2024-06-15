@@ -1,0 +1,39 @@
+<!-- templates/index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Upload Files to SFTP</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <h1>Upload Files to SFTP Server</h1>
+    <form action="/upload" method="post" enctype="multipart/form-data">
+        <input type="file" name="files" multiple required>
+        <input type="submit" value="Upload">
+    </form>
+    <br>
+    <button id="list-files-btn">Retrieve All File Names</button>
+    <ul id="file-list"></ul>
+
+    <script>
+        $(document).ready(function(){
+            $("#list-files-btn").click(function(){
+                $.ajax({
+                    url: "/list_files",
+                    type: "GET",
+                    success: function(data){
+                        $("#file-list").empty();
+                        data.files.forEach(function(file){
+                            $("#file-list").append("<li>" + file + "</li>");
+                        });
+                    },
+                    error: function(){
+                        alert("Failed to retrieve file names.");
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

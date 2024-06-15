@@ -1,0 +1,53 @@
+﻿1;1;Fracture de l’os scaphoïde de la main
+1;2;Soins de contrôle impliquant l’enlèvement d’une plaque et autre prothèse interne de fixation
+1;3;Fracture de l’extrémité inférieure du radius: Autres parties et parties multiples
+2;1;Hyperplasie de la prostate
+2;2;Rétention d’urine
+2;3;Incidents dus à des mesures médicales, sans précision
+2;4;Cardiopathie hypertensive, sans insuffisance cardiaque (congestive): Sans mention de crise hypertensive
+2;5;Hypothyroïdie, sans précision
+3;1;Fracture de l’extrémité inférieure du radius: Fracture en extension
+3;99;Autre accident et accident non précisé
+4;1;Avortement spontané: Incomplet, sans complication
+4;2;Durée de la grossesse: 14e semaine à 19 semaines révolues
+5;1;Fracture de l’extrémité inférieure du radius: Autres parties et parties multiples
+5;2;Athérosclérose des artères distales: Autres et non précisées
+5;3;Présence d’autres implants ou transplants cardiaques ou vasculaires
+5;99;Autre accident et accident non précisé
+6;1;Tumeur maligne: Peau de l’oreille et du conduit auditif externe
+7;1;Tumeur maligne: Côlon sigmoïde
+7;2;Tumeurs à évolution imprévisible ou inconnue: Côlon
+7;3;Hypertension essentielle bénigne: Sans mention de crise hypertensive
+8;1;Tumeur maligne: Lobe supérieur, bronches ou poumon
+8;2;Malnutrition protéino-énergétique grave, sans précision
+8;3;Hémorragie et hématome compliquant un acte à visée diagnostique et thérapeutique, non classés ailleurs
+8;4;Accidents et complications au cours d’actes médicaux et chirurgicaux
+8;5;Insuffisance respiratoire aiguë, non classée ailleurs: Type II [hypercapnique]
+8;6;Maladie pulmonaire obstructive chronique avec infection aiguë des voies respiratoires inférieures: VEF1 >=35 % et <50 % de la norme
+8;7;Autres pneumonies bactériennes
+8;8;Pneumonie acquise à l’hôpital, classée ailleurs, survenue plus de 48 heures après l’admission
+8;9;Autres micro-organismes anaérobies Gram positif non sporulants non précisés, cause de maladies classées dans d’autres chapitres
+8;10;Pneumothorax iatrogène
+8;11;Autres pneumothorax
+8;12;Acidose
+8;13;Insuffisance rénale aiguë, sans précision: Stade 2
+8;14;Anomalies du métabolisme du magnésium
+8;15;Troubles mentaux et du comportement liés à l’utilisation d’alcool: Utilisation nocive pour la santé
+8;16;Autres douleurs thoraciques
+9;1;Prolapsus utéro-vaginal partiel
+9;2;Incontinence de pression
+9;3;Obésité, sans précision: Obésité grade I (OMS) chez les patients de 18 ans et plus
+9;4;Hypertension essentielle bénigne: Sans mention de crise hypertensive
+9;5;Fibrillation auriculaire, paroxystique
+9;6;Hypothyroïdie, sans précision
+9;7;Goutte, sans précision: Localisations non précisées
+10;1;Pyothorax sans fistule
+10;2;Autres streptocoques spécifiés, cause de maladies classées dans d’autres chapitres
+10;3;Athérosclérose des artères distales: Autres et non précisées
+10;4;Présence d’autres implants ou transplants cardiaques ou vasculaires
+10;5;Hypertension essentielle bénigne: Sans mention de crise hypertensive
+10;6;Diabète sucré, type 2: Sans complication: Non désigné comme décompensé
+10;7;Anomalie du métabolisme des lipoprotéines, sans précision
+10;8;Troubles mentaux et du comportement liés à l’utilisation d’alcool: Utilisation nocive pour la santé
+10;9;Rétention d’urine
+10;10;Troubles mentaux et du comportement liés à l’utilisation de tabac: Syndrome de dépendance

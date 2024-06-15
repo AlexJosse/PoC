@@ -1,0 +1,34 @@
+﻿1;1;Ablation de matériel implanté dans l'os, os du carpe et du métacarpe: fil (intramédullaire), vis, cerclage-haubanage, plaque (à stabilité angulaire), fixateur externe, fixateur circulaire, agrafes (de Blount)
+1;2;Ablation de matériel implanté dans le radius et cubitus (proximal / diaphysaire / distal): autre matériel d'ostéosynthèse
+2;1;Prostatectomie transurétrale, électrorésection et électrovaporisation de tissu prostatique
+2;2;Libération de sténose urétrale, urétrotomie interne
+2;3;Sphinctérotomie de la vessie
+2;4;Insertion d'un cathéter urétral permanent
+3;1;Réduction ouverte de fracture de radius distal, avec fixation interne
+4;1;Aspiration curetage d'utérus après accouchement ou avortement
+5;1;Réduction ouverte de fracture de radius distal, avec fixation interne
+5;2;Ostéosynthèse par plaque à stabilité angulaire
+6;1;Excision d'autre lésion de l'oreille externe ou du conduit auditif externe
+6;2;Reconstruction du pavillon de l'oreille, partielle, avec lambeau aponévrotique
+7;1;Résection antérieure du rectum, avec anastomose, par laparoscopie
+7;2;Lymphadénectomie régionale dans le cadre d'une autre intervention, autre
+7;3;Techniques de traitement assistées par fluorescence
+7;4;Agrafage linéaire par laparoscopie ou thoracoscopie
+7;5;Agrafage circulaire par des orifices du corps préexistantes
+8;1;Excision et destruction locale de lésion ou de tissu de poumon, chirurgicale ouverte
+8;2;Autres réparations et opérations plastiques de poumon, autre
+8;3;Agrafage linéaire en chirurgie à ciel ouvert
+8;4;Traitement complexe en U-IMC chez l'adulte, 185 à 360 points de dépense
+8;5;Drainage pleural (par insertion de cathéter intercostal)
+8;6;Drainage pleural (par insertion de cathéter intercostal)
+8;7;Intervention guidée par CT
+8;8;Injection d'anesthésique et d'analgésique dans le canal rachidien pour traitement de la douleur
+8;9;Conseil/traitement diététique
+8;10;Tomographie axiale computérisée du thorax, autre
+9;1;Autre colporraphie du vagin avec plastie du plancher pelvien
+10;1;Pleurectomie partielle et décortication, chirurgicale ouverte
+10;2;Traitement complexe des douleurs aiguës, plus de 48 heures à 6 jours de traitement
+10;3;Drainage pleural (par insertion de cathéter intercostal)
+10;4;Drainage pleural (par insertion de cathéter intercostal)
+10;5;Injection intrapleurale, autre
+10;6;Traitement complexe en U-IMC chez l'adulte, 185 à 360 points de dépense
