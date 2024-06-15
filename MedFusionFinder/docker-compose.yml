@@ -71,6 +71,8 @@ services:
       - SFTP_PORT=22
       - SFTP_USERNAME=sftpuser
       - SFTP_PASSWORD=password
+      - ES_PORT=9200
+      - ES_HOST=elasticsearch
     ports:
       - "5000:5000"
     networks:
