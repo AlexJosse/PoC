@@ -19,7 +19,7 @@ MYSQL_PASSWORD = os.getenv('MYSQL_PASSWORD', 'root')
 MYSQL_DB = os.getenv('MYSQL_DB', 'hospital')
 ES_HOST = os.getenv('ES_HOST', 'localhost')
 ES_PORT = int(os.getenv('ES_PORT', 9200))
-ES_INDEX = os.getenv('ES_INDEX', 'patients')
+ES_INDEX = os.getenv('ES_INDEX', 'medical_data')
 
 
 # SFTP details
@@ -156,6 +156,40 @@ def process_csv():
         logging.error(f"Error processing CSV: {str(e)}")
         return jsonify({"error": str(e)}), 500
 
+# Search patients in Elasticsearch
+@app.route('/search_patients', methods=['GET'])
+def search_patients():
+    query = request.args.get('query', '')
+    es = Elasticsearch([{'host': ES_HOST, 'port': ES_PORT, 'scheme': 'http'}])
+    try:
+     int_query = int(query)
+     is_numeric = True
+    except ValueError:
+     is_numeric = False
+    if is_numeric:
+          search_body = {
+            "query": {
+                "term": {
+                "PID:": int_query
+                }
+            }
+    }
+    else:
+        search_body = {
+            "query": {
+                "multi_match": {
+                    "query": query,
+                    "fields": [
+                        "Pathology",
+                        "PID"
+                    ],
+                    "type": "best_fields",
+                    "fuzziness": "AUTO" 
+                }
+            }
+        }
+    response = es.search(index=ES_INDEX, body=search_body)
+    return jsonify(response['hits']['hits']), 200
 
 @app.route('/')
 def index():
