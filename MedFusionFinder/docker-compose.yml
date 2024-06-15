@@ -2,6 +2,7 @@ version: '3.8'
 
 networks:
   infra:
+    driver: bridge
 
 services:
   elasticsearch1:
@@ -11,9 +12,15 @@ services:
       - node.name=es01
       - cluster.name=docker-cluster
       - discovery.seed_hosts=elasticsearch1,elasticsearch2
-      - cluster.initial_master_nodes=elasticsearch1,elasticsearch2
+      - cluster.initial_master_nodes=es01,es02
       - network.host=0.0.0.0
       - xpack.security.enabled=false
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
     ports:
       - "9200:9200"
       - "9300:9300"
@@ -29,9 +36,15 @@ services:
       - node.name=es02
       - cluster.name=docker-cluster
       - discovery.seed_hosts=elasticsearch1,elasticsearch2
-      - cluster.initial_master_nodes=elasticsearch1,elasticsearch2
+      - cluster.initial_master_nodes=es01,es02
       - network.host=0.0.0.0
       - xpack.security.enabled=false
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
     ports:
       - "9201:9200"
       - "9301:9300"
@@ -83,7 +96,7 @@ services:
     container_name: med_fusion
     environment:
       - MYSQL_HOST=mysql
-      - MYSQL_PORT=3356
+      - MYSQL_PORT=3306
       - MYSQL_USER=root
       - MYSQL_PASSWORD=root
       - MYSQL_DB=hospital
@@ -95,6 +108,11 @@ services:
       - ES_HOST=elasticsearch1
     ports:
       - "5000:5000"
+    depends_on:
+      - elasticsearch1
+      - elasticsearch2
+      - mysql
+      - sftp
     networks:
       - infra
 
