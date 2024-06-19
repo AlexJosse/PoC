@@ -22,10 +22,9 @@
                 <template x-for="patient in results" :key="patient._id">
                     <li class="mb-4 p-4 border-b">
                         <p><strong>ID:</strong> <span x-text="patient._id"></span></p>
-                        <p><strong>PID:</strong> <span x-text="patient._source['PID:']"></span></p>
-                        <p><strong>Pathology:</strong> <span x-text="patient._source.Pathology"></span></p>
-                        <p><strong>Indication:</strong> <span x-text="patient._source.Indication"></span></p>
-                        <p><strong>Technique:</strong> <span x-text="patient._source.Technique"></span></p>
+                        <template x-for="[key, value] in Object.entries(patient._source)">
+                            <p><strong x-text="key + ':'"></strong> <span x-text="value"></span></p>
+                        </template>
                     </li>
                 </template>
             </ul>
