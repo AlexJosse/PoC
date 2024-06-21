@@ -20,6 +20,11 @@ app.register_blueprint(sftp_blueprint)
 from routes.search import search_bp as search_blueprint
 app.register_blueprint(search_blueprint)
 
+from routes.es_management import es_management_bp as es_management_blueprint
+app.register_blueprint(es_management_blueprint)
+
+from routes.pdf import pdf_bp as pdf_blueprint
+app.register_blueprint(pdf_blueprint)
 
 from routes.database import db_bp as db_blueprint
 app.register_blueprint(db_blueprint)

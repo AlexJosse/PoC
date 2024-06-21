@@ -11,6 +11,9 @@ def extract_text_from_pdf(file_path):
 
 def parse_pdf_text(text):
     patterns = {
+        #"PID": r"\b(\d+)\s*\(([\d\.]+),\s*([MF])\)", # \b(\d+)\s*: Matches and captures the PID, which is a series of digits, optionally followed by whitespace.
+        #"Birthdate": r"\b(\d+)\s*\(([\d\.]+),\s*([MF])\)", # \(([\d\.]+),\s*([MF])\): Matches an opening parenthesis, captures the birthdate (series of digits and dots), a comma, optional whitespace, captures the gender (either M or F), and a closing parenthesis.
+        #"Title": r"([^\n]+)\nIndication",  # Capture the text before the "Indication" section
         "Indication": r"Indication\s*([\s\S]*?)(?=Technique|Description|Epreuve de stress|Rehaussement tardif|Conclusion)",
         "Technique": r"Technique\s*([\s\S]*?)(?=Indication|Description|Epreuve de stress|Rehaussement tardif|Conclusion)",
         "Description": r"Description\s*([\s\S]*?)(?=Indication|Technique|Epreuve de stress|Rehaussement tardif|Conclusion)",
@@ -23,6 +26,13 @@ def parse_pdf_text(text):
     for field, pattern in patterns.items():
         match = re.search(pattern, text, re.MULTILINE | re.DOTALL)
         if match:
-            data[field] = match.group(1).strip()
+            if field == "PID":
+                data["PID"] = match.group(1).strip()
+                data["Birthdate"] = match.group(2).strip()
+                data["Gender"] = match.group(3).strip()
+            elif field == "Title":
+                data["Title"] = match.group(0).strip()
+            else:
+                data[field] = match.group(1).strip()
     
     return data

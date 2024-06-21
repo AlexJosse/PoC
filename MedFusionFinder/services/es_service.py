@@ -1,4 +1,4 @@
-from elasticsearch import Elasticsearch, TransportError
+from elasticsearch import Elasticsearch, TransportError, helpers
 from config import Config  # Import the config module
 
 def create_es_client(config):
@@ -13,6 +13,19 @@ def insert_data_into_elasticsearch(es, data, index_name='medical_data'):
             es.indices.put_settings(index=index_name, body={"index.blocks.read_only_allow_delete": None})
             res = es.index(index=index_name, body=data)
             return res['_id']
+        else:
+            raise e
+
+def clean_elasticsearch_index(es, index_name='medical_data'):
+    try:
+        helpers.bulk(es, [
+            {"_op_type": "delete", "_index": index_name, "_id": doc['_id']}
+            for doc in helpers.scan(es, index=index_name, _source=False)
+        ])
+        return {"message": f"All documents in index '{index_name}' have been deleted."}
+    except TransportError as e:
+        if e.status_code == 404:
+            return {"error": f"Index '{index_name}' not found."}
         else:
             raise e
 
