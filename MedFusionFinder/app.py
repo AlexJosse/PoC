@@ -35,5 +35,9 @@ app.register_blueprint(upload_blueprint)
 from routes.csv import csv_bp as csv_blueprint
 app.register_blueprint(csv_blueprint)
 
+
+from routes.database import db_bp as db_blueprint
+app.register_blueprint(db_blueprint)
+
 if __name__ == '__main__':
     app.run(debug=True)
