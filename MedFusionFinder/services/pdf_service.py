@@ -15,13 +15,16 @@ def process_service_pdf(config, es):
             pdf_files = [f for f in sftp.listdir() if f.endswith('.pdf')]
             if not pdf_files:
                 return {"error": "No PDF files found", "status_code": 400}
-            sftp.get(pdf_files[0], os.path.join(config.UPLOAD_FOLDER, pdf_files[0]))
-            pdf_file = os.path.join(config.UPLOAD_FOLDER, pdf_files[0])
-            text = extract_text_from_pdf(pdf_file)
-            parsed_data = parse_pdf_text(text)
-            logging.info(parsed_data)
-            insert_data_into_elasticsearch(es, parsed_data)
-            return {"message": "Data processed and inserted successfully", "status_code": 200}
+            
+            for pdf_file_name in pdf_files:
+                local_pdf_path = os.path.join(config.UPLOAD_FOLDER, pdf_file_name)
+                sftp.get(pdf_file_name, local_pdf_path)
+                text = extract_text_from_pdf(local_pdf_path)
+                parsed_data = parse_pdf_text(text)
+                insert_data_into_elasticsearch(es, parsed_data)
+                logging.info(f"Processed and inserted data from {pdf_file_name}")
+
+            return {"message": "All PDF files processed and inserted successfully", "status_code": 200}
     except Exception as e:
-        logging.error(f"Error processing PDF: {str(e)}")
+        logging.error(f"Error processing PDFs: {str(e)}")
         return {"error": str(e), "status_code": 500}

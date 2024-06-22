@@ -28,27 +28,30 @@ def process_csv():
             logging.error("Elasticsearch server is not reachable")
             return jsonify({"error": "Elasticsearch server is not reachable"}), 500
 
-        # Connect to SFTP and download the file
+        # Connect to SFTP and download the files
         with pysftp.Connection(Config.SFTP_HOST, username=Config.SFTP_USERNAME, password=Config.SFTP_PASSWORD, port=Config.SFTP_PORT, cnopts=cnopts) as sftp:
             sftp.cwd('upload')
             csv_files = [f for f in sftp.listdir() if f.endswith('.csv')]
-            logging.debug(f"File {csv_files}")
+            logging.debug(f"CSV files: {csv_files}")
             if not csv_files:
                 return jsonify({"error": "No CSV files found"}), 400
-            sftp.get(csv_files[0], os.path.join(current_app.config['UPLOAD_FOLDER'], csv_files[0]))
 
-            csv_file = os.path.join(current_app.config['UPLOAD_FOLDER'], csv_files[0])
-            data = pd.read_csv(csv_file, delimiter=',')
-            for index, row in data.iterrows():
-                doc = {
-                    'PID:': row['PID'],
-                    'Pathology': row['Pathology']
-                }
-                logging.debug(f"Test {row}")
-                res = es.index(index='medical_data', body=doc)
-                logging.debug(f"Inserted document ID: {res['_id']}")
+            for csv_file_name in csv_files:
+                local_csv_path = os.path.join(current_app.config['UPLOAD_FOLDER'], csv_file_name)
+                sftp.get(csv_file_name, local_csv_path)
+                logging.debug(f"Downloaded {csv_file_name} to {local_csv_path}")
 
-            return jsonify({"message": "Data processed and inserted successfully"}), 200
+                data = pd.read_csv(local_csv_path, delimiter=',')
+                for index, row in data.iterrows():
+                    doc = {
+                        'PID': row['PID'],
+                        'Pathology': row['Pathology']
+                    }
+                    logging.debug(f"Document to index: {doc}")
+                    res = es.index(index='medical_data', body=doc)
+                    logging.debug(f"Inserted document ID: {res['_id']}")
+
+            return jsonify({"message": "All CSV files processed and inserted successfully"}), 200
 
     except ConnectionError as e:
         logging.error(f"Connection error: {str(e)}")

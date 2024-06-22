@@ -29,7 +29,7 @@ def search_patients():
           search_body = {
             "query": {
                 "term": {
-                "PID:": int_query
+                "PID": int_query
                 }
             }
     }
