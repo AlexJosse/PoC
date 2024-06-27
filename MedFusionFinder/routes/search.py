@@ -40,19 +40,21 @@ def search_patients():
                     "query": query,
                     "fields": [
                         "Pathology",
-                        "PID",
                         "Indication",
                         "Technique",
                         "Description",
                         "Epreuve de stress",
                         "Rehaussement tardif",
-                        "Conclusion"
+                        "Conclusion",
+                        "Birthdate",
+                        "Title"
                     ],
                     "type": "best_fields",
                     "fuzziness": "AUTO" 
                 }
             }
         }
+    print(search_body)
     response = es.search(index=Config.ES_INDEX, body=search_body)
     print(response)
     return jsonify(response['hits']['hits']), 200
