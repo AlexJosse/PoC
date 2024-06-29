@@ -21,6 +21,7 @@
             <ul>
                 <template x-for="patient in results" :key="patient._id">
                     <li class="mb-6 p-6 border-b">
+                        <p class="text-lg"><strong>Score:</strong> <span x-text="patient._source._score"></span></p>
                         <template x-for="[key, value] in Object.entries(patient._source)">
                             <p class="text-lg"><strong x-text="key + ':'"></strong> <span x-text="value"></span></p>
                         </template>

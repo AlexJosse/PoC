@@ -14,6 +14,9 @@ logging.basicConfig(level=logging.DEBUG, stream=sys.stdout, format='%(asctime)s 
 from routes.main import main as main_blueprint
 app.register_blueprint(main_blueprint)
 
+from routes.sql import sql_bp as sql_blueprint
+app.register_blueprint(sql_blueprint)
+
 from routes.sftp import sftp_bp as sftp_blueprint
 app.register_blueprint(sftp_blueprint)
 

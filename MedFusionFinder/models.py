@@ -164,3 +164,29 @@ def search_patient(config, first_name=None, last_name=None):
     else:
         print("Failed to create the database connection")
         return "Failed to create the database connection"
+    
+
+
+def process_sql(config):
+    query = """
+    SELECT p.id, p.first_name, p.last_name, p.date_of_birth, p.gender, p.address, p.phone, p.email, prp.PID
+    FROM patients p
+    JOIN patients_relation_pid prp ON p.id = prp.patient_id;
+    """
+    connection = create_connection_to_db(config)
+    if connection is not None:
+        try:
+            cursor = connection.cursor()
+            cursor.execute(query)
+            result = cursor.fetchall()
+            columns = [col[0] for col in cursor.description]
+            patients_with_pid = [dict(zip(columns, row)) for row in result]
+            return patients_with_pid
+        except Error as e:
+            print(f"The error '{e}' occurred")
+            return str(e)
+        finally:
+            cursor.close()
+            connection.close()
+    else:
+        return ({"error": "Failed to create the database connection"})

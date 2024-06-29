@@ -54,7 +54,9 @@ def search_patients():
                 }
             }
         }
-    print(search_body)
     response = es.search(index=Config.ES_INDEX, body=search_body)
-    print(response)
-    return jsonify(response['hits']['hits']), 200
+    hits = response['hits']['hits']
+    for hit in hits:
+        hit['_source']['_score'] = hit['_score']
+
+    return jsonify(hits), 200
