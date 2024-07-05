@@ -11,12 +11,12 @@ def extract_text_from_pdf(file_path):
 
 def parse_pdf_text(text):
     patterns = {
-        "PID": r"(\d+)\s*\(",  # Captures the PID before the parenthesis
-        "Birthdate": r"\(([\d\.]+),\s*([MF])\)",  # Captures the birthdate and gender inside the parenthesis
-        "Title": r"([^\n]+)\nIndication",  # Capture the text before the "Indication" section
-        "Indication": r"Indication\s*([\s\S]*?)(?=Technique|Description|Epreuve de stress|Rehaussement tardif|Conclusion)",
-        "Technique": r"Technique\s*([\s\S]*?)(?=Indication|Description|Epreuve de stress|Rehaussement tardif|Conclusion)",
-        "Description": r"Description\s*([\s\S]*?)(?=Indication|Technique|Epreuve de stress|Rehaussement tardif|Conclusion)",
+        "PID": r"(\d{10})\s*\(",  # Captures the 10-digit PID before the parenthesis
+        "Birthdate": r"\((\d{2}\.\d{2}\.\d{4}),\s*([MF])\)",  # Captures the birthdate and gender inside the parenthesis
+        "Title": r"\)\s*([^\n]+)\s*(?:Indication|Technique|Description|Epreuve de stress|Rehaussement tardif|Conclusion|$)",  # Capture the text after the birthdate before the next section
+        "Indication": r"Indication\s*([\s\S]*?)(?=Technique|Description|Epreuve de stress|Rehaussement tardif|Conclusion|$)",
+        "Technique": r"Technique\s*([\s\S]*?)(?=Indication|Description|Epreuve de stress|Rehaussement tardif|Conclusion|$)",
+        "Description": r"Description\s*([\s\S]*?)(?=Indication|Technique|Epreuve de stress|Rehaussement tardif|Conclusion|$)",
         "Epreuve de stress": r"Epreuve de stress\s*([\s\S]*?)(?=Indication|Technique|Description|Rehaussement tardif|Conclusion|$)",
         "Rehaussement tardif": r"Rehaussement tardif\s*([\s\S]*?)(?=Indication|Technique|Description|Epreuve de stress|Conclusion|$)",
         "Conclusion": r"Conclusion\s*([\s\S]*?)(?=Indication|Technique|Description|Epreuve de stress|Rehaussement tardif|$)"

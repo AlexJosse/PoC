@@ -59,7 +59,9 @@ def process_csv():
                 sftp.get(csv_file_name, local_csv_path)
                 logging.debug(f"Downloaded {csv_file_name} to {local_csv_path}")
 
-                data = pd.read_csv(local_csv_path, delimiter=',')
+               # Use quoting=csv.QUOTE_ALL to ensure proper handling of fields with commas
+                data = pd.read_csv(local_csv_path, delimiter=',', quotechar='"', quoting=2)
+        
                 for index, row in data.iterrows():
                     doc = {
                         'PID': row['PID'],
