@@ -67,3 +67,26 @@ def search_patients(es, query, index_name='medical_data'):
 
     response = es.search(index=index_name, body=search_body)
     return response['hits']['hits']
+
+def map_patient_to_es(patient):
+    return {
+        "PID": patient["PID"],
+        "Birthdate": patient["date_of_birth"],
+        "Adress": patient["address"]
+    }
+
+def insert_data_into_es_sql(es, patients):
+    actions = [
+        {
+            "_index": "medical_data",
+            "_id": patient['id'],
+            "_source": map_patient_to_es(patient)
+        }
+        for patient in patients
+    ]
+
+    try:
+        helpers.bulk(es, actions)
+        return {"message": "Data inserted successfully"}
+    except Exception as e:
+        return {"error": str(e)}
