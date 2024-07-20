@@ -72,7 +72,8 @@ def map_patient_to_es(patient):
     return {
         "PID": patient["PID"],
         "Birthdate": patient["date_of_birth"],
-        "Adress": patient["address"]
+        "Adress": patient["address"],
+        "from": "SQL"
     }
 
 def insert_data_into_es_sql(es, patients):

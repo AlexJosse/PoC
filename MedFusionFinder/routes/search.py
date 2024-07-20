@@ -29,7 +29,7 @@ def search_patients():
           search_body = {
             "query": {
                 "term": {
-                "PID": int_query
+                "PID": int_query,
                 }
             }
     }
@@ -41,12 +41,12 @@ def search_patients():
                     "fields": [
                         "Pathology",
                         "Indication",
+                        "Adress",
                         "Technique",
                         "Description",
                         "Epreuve de stress",
                         "Rehaussement tardif",
                         "Conclusion",
-                        "Birthdate",
                         "Title"
                     ],
                     "type": "best_fields",

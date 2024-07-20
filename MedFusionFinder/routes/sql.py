@@ -16,7 +16,6 @@ def list_sql_files():
         patients = message
     else:
         return jsonify({"error": "Unexpected response format from process_sql"}), 500
-
     message = insert_data_into_es_sql(es, patients)
     if "error" in message:
         return jsonify({"error": message}), 500

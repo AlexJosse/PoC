@@ -28,24 +28,12 @@ def process_csv():
             logging.error("Elasticsearch server is not reachable")
             return jsonify({"error": "Elasticsearch server is not reachable"}), 500
 
-        similarity_settings = {
-            "similarity": {
-                "default": {
-                    "type": "BM25",
-                    "k1": 1.5,
-                    "b": 0.75
-                }
-            }
-        }
-
+       
         index_name = 'medical_data'
         if not es.indices.exists(index=index_name):
-            es.indices.create(index=index_name, body={"settings": similarity_settings})
+            es.indices.create(index=index_name)
             logging.debug(f"Created index {index_name} with custom similarity settings")
-        else:
-            es.indices.put_settings(index=index_name, body={"settings": similarity_settings})
-            logging.debug(f"Updated index {index_name} with custom similarity settings")
-
+        
         # Connect to SFTP and download the files
         with pysftp.Connection(Config.SFTP_HOST, username=Config.SFTP_USERNAME, password=Config.SFTP_PASSWORD, port=Config.SFTP_PORT, cnopts=cnopts) as sftp:
             sftp.cwd('upload')
@@ -65,7 +53,8 @@ def process_csv():
                 for index, row in data.iterrows():
                     doc = {
                         'PID': row['PID'],
-                        'Pathology': row['Pathology']
+                        'Pathology': row['Pathology'],
+                        "from": "csv"
                     }
                     logging.debug(f"Document to index: {doc}")
                     res = es.index(index='medical_data', body=doc)
